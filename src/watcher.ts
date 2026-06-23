@@ -57,7 +57,7 @@ export class FolderWatcher {
     try {
       await this.onFile(filePath);
     } catch (err) {
-      console.error("Maildrop watcher:", err);
+      console.error("Postbox watcher:", err);
     }
   }
 

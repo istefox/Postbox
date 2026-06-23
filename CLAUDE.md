@@ -1,6 +1,6 @@
-# CLAUDE.md — Maildrop (Obsidian EML/MSG to Markdown)
+# CLAUDE.md — Postbox (Obsidian EML/MSG to Markdown)
 
-> Working name: **Maildrop**. Update `manifest.json` id/name once finalized and verified against the Obsidian community registry.
+> Name: **Postbox** (manifest id `postbox`). Verify id/name availability against the Obsidian community registry before store submission.
 > Full product spec: `20260623_ObsidianEmlPlugin_Spec_v1.md`. The spec is the source of truth — if this file and the spec disagree, the spec wins.
 
 ## Project
@@ -53,7 +53,7 @@ Both parsers must emit one normalized `ParsedEmail` shape so `converter`/`note-b
 
 - `npm run dev` — esbuild watch.
 - `npm run build` — typecheck (`tsc --noEmit`) + production bundle.
-- Manual test: copy `main.js`, `manifest.json`, `styles.css` into a test vault `.obsidian/plugins/maildrop/`.
+- Manual test: copy `main.js`, `manifest.json`, `styles.css` into a test vault `.obsidian/plugins/postbox/`.
 - Keep `versions.json` in sync with `manifest.json` minAppVersion.
 
 ## Acceptance (must pass — see spec §9)

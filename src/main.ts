@@ -9,8 +9,8 @@ import {
 } from "obsidian";
 import {
   DEFAULT_SETTINGS,
-  MaildropSettings,
-  MaildropSettingTab,
+  PostboxSettings,
+  PostboxSettingTab,
 } from "./settings";
 import { parseEml } from "./parser/eml";
 import { parseMsg } from "./parser/msg";
@@ -34,8 +34,8 @@ type ImportResult =
   | { status: "duplicate"; file: TFile }
   | { status: "error"; reason: string };
 
-export default class MaildropPlugin extends Plugin {
-  settings: MaildropSettings = DEFAULT_SETTINGS;
+export default class PostboxPlugin extends Plugin {
+  settings: PostboxSettings = DEFAULT_SETTINGS;
   private watcher: FolderWatcher | null = null;
   private watchImported = 0;
   private watchNoticeTimer: ReturnType<typeof setTimeout> | null = null;
@@ -43,7 +43,7 @@ export default class MaildropPlugin extends Plugin {
   async onload(): Promise<void> {
     await this.loadSettings();
 
-    this.addSettingTab(new MaildropSettingTab(this.app, this));
+    this.addSettingTab(new PostboxSettingTab(this.app, this));
 
     this.addCommand({
       id: "import-email-file",
@@ -93,7 +93,7 @@ export default class MaildropPlugin extends Plugin {
       void this.watcher
         .start()
         .catch((err) =>
-          new Notice(`Maildrop: watch folder error (${describe(err)})`),
+          new Notice(`Postbox: watch folder error (${describe(err)})`),
         );
     }
   }
@@ -213,11 +213,11 @@ export default class MaildropPlugin extends Plugin {
 
   private notifyManual(name: string, result: ImportResult): void {
     if (result.status === "created") {
-      new Notice(`Maildrop: imported "${result.file.basename}"`);
+      new Notice(`Postbox: imported "${result.file.basename}"`);
     } else if (result.status === "duplicate") {
-      new Notice(`Maildrop: "${name}" already imported`);
+      new Notice(`Postbox: "${name}" already imported`);
     } else {
-      new Notice(`Maildrop: could not import "${name}" (${result.reason})`);
+      new Notice(`Postbox: could not import "${name}" (${result.reason})`);
     }
   }
 
@@ -225,7 +225,7 @@ export default class MaildropPlugin extends Plugin {
     this.watchImported++;
     if (this.watchNoticeTimer) clearTimeout(this.watchNoticeTimer);
     this.watchNoticeTimer = setTimeout(() => {
-      new Notice(`Maildrop: imported ${this.watchImported} emails`);
+      new Notice(`Postbox: imported ${this.watchImported} emails`);
       this.watchImported = 0;
       this.watchNoticeTimer = null;
     }, 2000);

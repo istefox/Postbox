@@ -1,6 +1,6 @@
 ## Status (2026-06-23)
-**Branch:** main
-**Last commit:** d230f7d — chore: add project spec and gitignore
-**In progress:** Obsidian EML plugin — only the v1 spec exists, no code yet
-**Next:** scaffold the plugin from docs/20260623_ObsidianEmlPlugin_Spec_v1.md
-**Open decisions:** none
+**Branch:** feat/email-import-pipeline (PR open to main)
+**Last commit:** feat: implement .eml and .msg import pipeline
+**In progress:** Postbox plugin — import pipeline implemented, build green, reviewed (RTF cycle 1)
+**Next:** merge PR, then manual acceptance testing in a real vault (spec §9)
+**Open decisions:** attachment wikilinks use full vault path (accepted; robust to duplicate basenames)

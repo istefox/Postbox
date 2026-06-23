@@ -1,7 +1,7 @@
 import { App, PluginSettingTab, Setting } from "obsidian";
-import type MaildropPlugin from "./main";
+import type PostboxPlugin from "./main";
 
-export interface MaildropSettings {
+export interface PostboxSettings {
   notesFolder: string;
   attachmentsFolder: string;
   filenameTemplate: string;
@@ -14,7 +14,7 @@ export interface MaildropSettings {
   openNoteAfterManualImport: boolean;
 }
 
-export const DEFAULT_SETTINGS: MaildropSettings = {
+export const DEFAULT_SETTINGS: PostboxSettings = {
   notesFolder: "Email/",
   attachmentsFolder: "Email/attachments/",
   filenameTemplate: "{{date}}_{{from}}_{{subject}}",
@@ -27,10 +27,10 @@ export const DEFAULT_SETTINGS: MaildropSettings = {
   openNoteAfterManualImport: true,
 };
 
-export class MaildropSettingTab extends PluginSettingTab {
-  private plugin: MaildropPlugin;
+export class PostboxSettingTab extends PluginSettingTab {
+  private plugin: PostboxPlugin;
 
-  constructor(app: App, plugin: MaildropPlugin) {
+  constructor(app: App, plugin: PostboxPlugin) {
     super(app, plugin);
     this.plugin = plugin;
   }
