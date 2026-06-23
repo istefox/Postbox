@@ -2,11 +2,11 @@
 
 Obsidian plugin that imports `.eml` and `.msg` email files and turns them into native Markdown notes: the HTML body becomes clean Markdown, attachments are saved to disk and linked, inline images render in place, and a structured YAML frontmatter makes every note Dataview-friendly.
 
-> Status: work in progress. This is the scaffold stage. The project structure, build, and settings are in place; the parsing and conversion logic is being implemented branch by branch.
+> Status: the import pipeline is implemented (`.eml` and `.msg` parsing, HTML to Markdown, attachments, inline images, frontmatter, manual import, and watch folder). Acceptance is verified by a clean build; functional testing in a real vault is recommended before the first release.
 
 Desktop only. The plugin works on `.eml`/`.msg` files already on disk, with no Outlook, IMAP, or Exchange connection.
 
-## Planned features
+## Features
 
 - Import `.eml` (MIME) and `.msg` (Outlook) files.
 - Convert the HTML body to Markdown, keeping links, lists, and tables.
@@ -38,6 +38,7 @@ To try it in Obsidian, copy `main.js`, `manifest.json`, and `styles.css` into yo
 | Filename template | `{{date}}_{{from}}_{{subject}}` |
 | Date format | `YYYY-MM-DD` |
 | Extra tag | (empty) |
+| Source account | (empty) |
 | Include inline images | on |
 | Watch folder enabled | off |
 | Watch folder path | (empty) |
