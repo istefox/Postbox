@@ -7,6 +7,7 @@ export interface MaildropSettings {
   filenameTemplate: string;
   dateFormat: string;
   extraTag: string;
+  sourceAccount: string;
   includeInlineImages: boolean;
   watchFolderEnabled: boolean;
   watchFolderPath: string;
@@ -19,6 +20,7 @@ export const DEFAULT_SETTINGS: MaildropSettings = {
   filenameTemplate: "{{date}}_{{from}}_{{subject}}",
   dateFormat: "YYYY-MM-DD",
   extraTag: "",
+  sourceAccount: "",
   includeInlineImages: true,
   watchFolderEnabled: false,
   watchFolderPath: "",
@@ -99,6 +101,18 @@ export class MaildropSettingTab extends PluginSettingTab {
           .setValue(this.plugin.settings.extraTag)
           .onChange(async (value) => {
             this.plugin.settings.extraTag = value;
+            await this.plugin.saveSettings();
+          }),
+      );
+
+    new Setting(containerEl)
+      .setName("Source account")
+      .setDesc("Mailbox this email was received on, written to the source-account frontmatter field. Leave empty to disable.")
+      .addText((text) =>
+        text
+          .setValue(this.plugin.settings.sourceAccount)
+          .onChange(async (value) => {
+            this.plugin.settings.sourceAccount = value;
             await this.plugin.saveSettings();
           }),
       );

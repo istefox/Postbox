@@ -7,3 +7,8 @@ node_modules/
 # Build artifacts
 main.js
 *.js.map
+
+# Concept-to-code chain artifacts (process state, not shipped)
+SPEC.md
+docs/manifests/
+.claude/.triage-fix-last-*.json

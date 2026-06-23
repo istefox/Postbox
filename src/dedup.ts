@@ -1,13 +1,20 @@
-import type { App, TFile } from "obsidian";
+import { App, TFile } from "obsidian";
 
 /**
- * Look up an existing note with the given Message-ID in its frontmatter, using
- * the MetadataCache. Returns the matching file, or null if none exists.
- * Not implemented yet (scaffold stage).
+ * Find an existing note whose frontmatter message-id matches, via the
+ * MetadataCache. Returns the first match, or null if none exists.
  */
 export function findExistingByMessageId(
-  _app: App,
-  _messageId: string,
+  app: App,
+  messageId: string,
 ): TFile | null {
-  throw new Error("findExistingByMessageId: not implemented");
+  const target = messageId.trim();
+  if (!target) return null;
+
+  for (const file of app.vault.getMarkdownFiles()) {
+    const frontmatter = app.metadataCache.getFileCache(file)?.frontmatter;
+    const value = frontmatter?.["message-id"];
+    if (typeof value === "string" && value.trim() === target) return file;
+  }
+  return null;
 }
