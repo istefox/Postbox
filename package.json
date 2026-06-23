@@ -1,5 +1,5 @@
 {
-  "name": "maildrop",
+  "name": "postbox",
   "version": "0.1.0",
   "description": "Obsidian plugin that imports .eml and .msg email files and converts them into native Markdown notes.",
   "main": "main.js",

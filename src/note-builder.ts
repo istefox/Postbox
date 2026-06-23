@@ -1,4 +1,4 @@
-import type { MaildropSettings } from "./settings";
+import type { PostboxSettings } from "./settings";
 import type { EmailAddress, ParsedEmail } from "./types";
 
 const MAX_FILENAME_LENGTH = 180;
@@ -7,7 +7,7 @@ const ILLEGAL_FILENAME_CHARS = /[\\/:*?"<>|#^[\]]/g;
 /** Build the YAML frontmatter block (with delimiters and trailing newline). */
 export function buildFrontmatter(
   email: ParsedEmail,
-  settings: MaildropSettings,
+  settings: PostboxSettings,
   sourceFile: string,
   attachmentNames: string[],
 ): string {
@@ -36,7 +36,7 @@ export function buildFrontmatter(
 export function renderFilename(
   template: string,
   email: ParsedEmail,
-  settings: MaildropSettings,
+  settings: PostboxSettings,
 ): string {
   const when = email.date ?? new Date();
   const rendered = template

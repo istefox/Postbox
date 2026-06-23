@@ -2,7 +2,7 @@ import TurndownService from "turndown";
 import { gfm } from "turndown-plugin-gfm";
 import type { ParsedEmail } from "./types";
 
-const PLACEHOLDER_PREFIX = "MAILDROPINLINE";
+const PLACEHOLDER_PREFIX = "POSTBOXINLINE";
 
 let turndown: TurndownService | null = null;
 

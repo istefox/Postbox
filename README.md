@@ -1,4 +1,4 @@
-# Maildrop
+# Postbox
 
 Obsidian plugin that imports `.eml` and `.msg` email files and turns them into native Markdown notes: the HTML body becomes clean Markdown, attachments are saved to disk and linked, inline images render in place, and a structured YAML frontmatter makes every note Dataview-friendly.
 
@@ -27,7 +27,7 @@ npm run dev      # esbuild watch (rebuilds main.js on change)
 npm run build    # type-check, then produce the production main.js
 ```
 
-To try it in Obsidian, copy `main.js`, `manifest.json`, and `styles.css` into your test vault under `.obsidian/plugins/maildrop/`, then enable the plugin in Settings.
+To try it in Obsidian, copy `main.js`, `manifest.json`, and `styles.css` into your test vault under `.obsidian/plugins/postbox/`, then enable the plugin in Settings.
 
 ## Settings
 
