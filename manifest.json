@@ -1,0 +1,10 @@
+{
+  "id": "maildrop",
+  "name": "Maildrop",
+  "version": "0.1.0",
+  "minAppVersion": "1.5.0",
+  "description": "Import .eml and .msg email files and convert them into native Markdown notes with attachments, inline images, and structured frontmatter.",
+  "author": "Stefano Ferri",
+  "authorUrl": "https://github.com/istefox",
+  "isDesktopOnly": true
+}
