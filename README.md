@@ -2,9 +2,13 @@
 
 Obsidian plugin that imports `.eml` and `.msg` email files and turns them into native Markdown notes: the HTML body becomes clean Markdown, attachments are saved to disk and linked, inline images render in place, and a structured YAML frontmatter makes every note Dataview-friendly.
 
-> Status: the import pipeline is implemented (`.eml` and `.msg` parsing, HTML to Markdown, attachments, inline images, frontmatter, manual import, and watch folder). Acceptance is verified by a clean build; functional testing in a real vault is recommended before the first release.
-
 Desktop only. The plugin works on `.eml`/`.msg` files already on disk, with no Outlook, IMAP, or Exchange connection.
+
+## Installation
+
+From Obsidian (once approved in the community store): open Settings, go to Community plugins, browse, search for "Postbox", install it, then enable it.
+
+Manual install: download `main.js`, `manifest.json`, and `styles.css` from the latest [release](https://github.com/istefox/Postbox/releases), put them in your vault under `.obsidian/plugins/postbox/`, then enable the plugin in Settings.
 
 ## Features
 
