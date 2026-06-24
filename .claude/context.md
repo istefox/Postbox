@@ -1,6 +1,6 @@
-## Status (2026-06-23)
-**Branch:** feat/html-layout-rendering (PR open to main)
-**Last commit:** 16f4f5b — feat(converter): render email layout tables as Markdown
-**In progress:** Postbox plugin — HTML signature/layout rendering improved (inline images render, layout tables flattened, bold mapped)
-**Next:** merge PR, continue manual acceptance testing in the Lab vault (spec §9: .msg parity, dedup, watch-folder)
-**Open decisions:** layout tables flattened to block lines + inline cells; colors/fonts not reproducible in Markdown (accepted)
+## Status (2026-06-24)
+**Branch:** main
+**Last commit:** aefe2f6 — chore: prepare for Obsidian community store submission (#6)
+**In progress:** Submission readiness done. Release 0.1.0 published on GitHub (main.js/manifest.json/styles.css attached via release.yml). Draft listing exists on community.obsidian.md.
+**Next:** click Publish on the community.obsidian.md draft; then finish spec §9 manual acceptance testing (.msg parity, dedup, watch-folder) in the Lab vault.
+**Open decisions:** submission via community.obsidian.md (no obsidian-releases PR); tag must equal manifest version with no "v" prefix.

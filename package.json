@@ -1,6 +1,6 @@
 {
   "name": "postbox",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Obsidian plugin that imports .eml and .msg email files and converts them into native Markdown notes.",
   "main": "main.js",
   "scripts": {
@@ -20,7 +20,6 @@
   "devDependencies": {
     "@types/node": "^20.11.0",
     "@types/turndown": "^5.0.4",
-    "builtin-modules": "^3.3.0",
     "esbuild": "^0.25.0",
     "obsidian": "^1.5.0",
     "typescript": "^5.4.0"

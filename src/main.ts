@@ -38,7 +38,7 @@ export default class PostboxPlugin extends Plugin {
   settings: PostboxSettings = DEFAULT_SETTINGS;
   private watcher: FolderWatcher | null = null;
   private watchImported = 0;
-  private watchNoticeTimer: ReturnType<typeof setTimeout> | null = null;
+  private watchNoticeTimer: number | null = null;
 
   async onload(): Promise<void> {
     await this.loadSettings();
@@ -70,13 +70,14 @@ export default class PostboxPlugin extends Plugin {
   onunload(): void {
     this.stopWatcher();
     if (this.watchNoticeTimer) {
-      clearTimeout(this.watchNoticeTimer);
+      window.clearTimeout(this.watchNoticeTimer);
       this.watchNoticeTimer = null;
     }
   }
 
   async loadSettings(): Promise<void> {
-    this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+    const data = (await this.loadData()) as Partial<PostboxSettings> | null;
+    this.settings = Object.assign({}, DEFAULT_SETTINGS, data ?? {});
   }
 
   async saveSettings(): Promise<void> {
@@ -125,10 +126,8 @@ export default class PostboxPlugin extends Plugin {
 
   private async handleWatchedFile(path: string): Promise<void> {
     const buffer = await readFile(path);
-    const bytes = buffer.buffer.slice(
-      buffer.byteOffset,
-      buffer.byteOffset + buffer.byteLength,
-    ) as ArrayBuffer;
+    const bytes = new ArrayBuffer(buffer.byteLength);
+    new Uint8Array(bytes).set(buffer);
     const result = await this.importEmail(bytes, path, basename(path));
     if (result.status === "created") this.scheduleWatchNotice();
   }
@@ -223,8 +222,8 @@ export default class PostboxPlugin extends Plugin {
 
   private scheduleWatchNotice(): void {
     this.watchImported++;
-    if (this.watchNoticeTimer) clearTimeout(this.watchNoticeTimer);
-    this.watchNoticeTimer = setTimeout(() => {
+    if (this.watchNoticeTimer) window.clearTimeout(this.watchNoticeTimer);
+    this.watchNoticeTimer = window.setTimeout(() => {
       new Notice(`Postbox: imported ${this.watchImported} emails`);
       this.watchImported = 0;
       this.watchNoticeTimer = null;
@@ -245,12 +244,12 @@ function metaBlock(email: ParsedEmail): string {
 
 function pickFiles(): Promise<File[]> {
   return new Promise((resolve) => {
-    const input = document.createElement("input");
+    const input = activeDocument.createElement("input");
     input.type = "file";
     input.accept = ".eml,.msg";
     input.multiple = true;
-    input.style.display = "none";
-    document.body.appendChild(input);
+    input.addClass("postbox-visually-hidden");
+    activeDocument.body.appendChild(input);
 
     const finish = (files: File[]) => {
       input.remove();

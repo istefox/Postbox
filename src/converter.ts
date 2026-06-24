@@ -160,7 +160,7 @@ function linkWrappingOnly(img: Element): Element | null {
 function flattenLayoutTables(doc: Document): void {
   const keep = new Set<Element>();
   doc.querySelectorAll("table").forEach((table) => {
-    if (isDataTable(table as HTMLTableElement)) keep.add(table);
+    if (isDataTable(table)) keep.add(table);
   });
 
   // Retag deepest-first so retagging a parent never reverts a processed child.
