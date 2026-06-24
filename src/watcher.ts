@@ -9,7 +9,7 @@ import { extname, join } from "path";
  */
 export class FolderWatcher {
   private watcher: FSWatcher | null = null;
-  private readonly timers = new Map<string, ReturnType<typeof setTimeout>>();
+  private readonly timers = new Map<string, number>();
   private readonly settleMs = 1500;
 
   constructor(
@@ -37,16 +37,16 @@ export class FolderWatcher {
   stop(): void {
     this.watcher?.close();
     this.watcher = null;
-    for (const timer of this.timers.values()) clearTimeout(timer);
+    for (const timer of this.timers.values()) window.clearTimeout(timer);
     this.timers.clear();
   }
 
   private schedule(filePath: string): void {
     const existing = this.timers.get(filePath);
-    if (existing) clearTimeout(existing);
+    if (existing) window.clearTimeout(existing);
     this.timers.set(
       filePath,
-      setTimeout(() => {
+      window.setTimeout(() => {
         this.timers.delete(filePath);
         void this.process(filePath);
       }, this.settleMs),

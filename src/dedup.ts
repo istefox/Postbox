@@ -13,7 +13,7 @@ export function findExistingByMessageId(
 
   for (const file of app.vault.getMarkdownFiles()) {
     const frontmatter = app.metadataCache.getFileCache(file)?.frontmatter;
-    const value = frontmatter?.["message-id"];
+    const value: unknown = frontmatter?.["message-id"];
     if (typeof value === "string" && value.trim() === target) return file;
   }
   return null;

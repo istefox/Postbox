@@ -1,1 +1,6 @@
-/* Postbox plugin styles. Empty for now; add UI styles here as the plugin grows. */
+/* Postbox plugin styles. */
+
+/* Hidden file <input> used by the manual import picker. */
+.postbox-visually-hidden {
+  display: none;
+}
