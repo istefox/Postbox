@@ -1,6 +1,6 @@
 ## Status (2026-06-23)
-**Branch:** feat/email-import-pipeline (PR open to main)
-**Last commit:** feat: implement .eml and .msg import pipeline
-**In progress:** Postbox plugin — import pipeline implemented, build green, reviewed (RTF cycle 1)
-**Next:** merge PR, then manual acceptance testing in a real vault (spec §9)
-**Open decisions:** attachment wikilinks use full vault path (accepted; robust to duplicate basenames)
+**Branch:** feat/html-layout-rendering (PR open to main)
+**Last commit:** 16f4f5b — feat(converter): render email layout tables as Markdown
+**In progress:** Postbox plugin — HTML signature/layout rendering improved (inline images render, layout tables flattened, bold mapped)
+**Next:** merge PR, continue manual acceptance testing in the Lab vault (spec §9: .msg parity, dedup, watch-folder)
+**Open decisions:** layout tables flattened to block lines + inline cells; colors/fonts not reproducible in Markdown (accepted)
