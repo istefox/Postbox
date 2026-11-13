@@ -4,3 +4,48 @@
 .postbox-visually-hidden {
   display: none;
 }
+
+/* Frontmatter property rows in the settings tab. */
+.postbox-prop-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-4-2);
+  margin-bottom: var(--size-4-3);
+}
+
+.postbox-prop-row {
+  display: flex;
+  align-items: center;
+  gap: var(--size-4-2);
+  border-radius: var(--radius-s);
+}
+
+.postbox-prop-row.is-dragging {
+  opacity: 0.5;
+}
+
+.postbox-prop-row.is-drop-target {
+  box-shadow: 0 -2px 0 0 var(--interactive-accent);
+}
+
+.postbox-prop-handle {
+  display: flex;
+  color: var(--text-faint);
+  cursor: grab;
+}
+
+.postbox-prop-key {
+  flex: 0 0 30%;
+  min-width: 0;
+}
+
+.postbox-prop-value {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.postbox-prop-type:disabled,
+.postbox-prop-delete:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}

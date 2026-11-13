@@ -1,12 +1,23 @@
-import { App, PluginSettingTab, Setting } from "obsidian";
+import { App, Menu, PluginSettingTab, Setting, setIcon } from "obsidian";
+import {
+  MESSAGE_ID_ROW,
+  PROPERTY_TYPES,
+  PROPERTY_VARIABLES,
+  PropertyRow,
+  PropertyType,
+  defaultProperties,
+  newPropertyRow,
+} from "./properties";
 import type PostboxPlugin from "./main";
 
 export interface PostboxSettings {
+  properties: PropertyRow[];
   notesFolder: string;
   attachmentsFolder: string;
   filenameTemplate: string;
   dateFormat: string;
-  extraTag: string;
+  /** Comma-separated tags available as the {{tags}} variable. */
+  tags: string;
   sourceAccount: string;
   includeInlineImages: boolean;
   watchFolderEnabled: boolean;
@@ -15,11 +26,12 @@ export interface PostboxSettings {
 }
 
 export const DEFAULT_SETTINGS: PostboxSettings = {
+  properties: defaultProperties(),
   notesFolder: "Email/",
   attachmentsFolder: "Email/attachments/",
   filenameTemplate: "{{date}}_{{from}}_{{subject}}",
   dateFormat: "YYYY-MM-DD",
-  extraTag: "",
+  tags: "email",
   sourceAccount: "",
   includeInlineImages: true,
   watchFolderEnabled: false,
@@ -94,13 +106,14 @@ export class PostboxSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName("Extra tag")
-      .setDesc("Additional tag added to every note alongside the fixed 'email' tag. Leave empty to disable.")
+      .setName("Tags")
+      .setDesc("Comma-separated tags added to every note through the {{tags}} property variable. Leave empty to add no tags.")
       .addText((text) =>
         text
-          .setValue(this.plugin.settings.extraTag)
+          .setPlaceholder("email, inbox")
+          .setValue(this.plugin.settings.tags)
           .onChange(async (value) => {
-            this.plugin.settings.extraTag = value;
+            this.plugin.settings.tags = value;
             await this.plugin.saveSettings();
           }),
       );
@@ -141,6 +154,34 @@ export class PostboxSettingTab extends PluginSettingTab {
           }),
       );
 
+    new Setting(containerEl).setName("Frontmatter properties").setHeading();
+
+    const variables = PROPERTY_VARIABLES.map((v) => `{{${v.name}}}`).join(", ");
+    new Setting(containerEl).setDesc(
+      "Properties written to the top of each imported note. Use variables to fill in data from the email: " +
+        `${variables}. Changes apply to newly imported notes only. ` +
+        "The Message-ID property can be renamed but not removed, because it is used to skip duplicates.",
+    );
+
+    const listEl = containerEl.createDiv({ cls: "postbox-prop-list" });
+    this.renderProperties(listEl);
+
+    new Setting(containerEl)
+      .addButton((button) =>
+        button.setButtonText("Add property").onClick(async () => {
+          this.plugin.settings.properties.push(newPropertyRow());
+          await this.saveProperties();
+          this.renderProperties(listEl);
+        }),
+      )
+      .addButton((button) =>
+        button.setButtonText("Reset to defaults").onClick(async () => {
+          this.plugin.settings.properties = defaultProperties();
+          await this.saveProperties();
+          this.renderProperties(listEl);
+        }),
+      );
+
     new Setting(containerEl).setName("Watch folder").setHeading();
 
     new Setting(containerEl)
@@ -167,4 +208,122 @@ export class PostboxSettingTab extends PluginSettingTab {
           }),
       );
   }
+
+  /** Persist property edits without restarting the watch folder. */
+  private async saveProperties(): Promise<void> {
+    await this.plugin.saveData(this.plugin.settings);
+  }
+
+  private renderProperties(listEl: HTMLElement): void {
+    listEl.empty();
+    const rows = this.plugin.settings.properties;
+    let dragIndex = -1;
+
+    rows.forEach((row, index) => {
+      const rowEl = listEl.createDiv({ cls: "postbox-prop-row" });
+      const required = row.id === MESSAGE_ID_ROW;
+
+      const handle = rowEl.createSpan({ cls: "postbox-prop-handle" });
+      setIcon(handle, "grip-vertical");
+      handle.addEventListener("mousedown", () => (rowEl.draggable = true));
+      rowEl.addEventListener("dragstart", (evt) => {
+        dragIndex = index;
+        evt.dataTransfer?.setData("text/plain", row.key);
+        rowEl.addClass("is-dragging");
+      });
+      rowEl.addEventListener("dragend", () => {
+        rowEl.draggable = false;
+        rowEl.removeClass("is-dragging");
+      });
+      rowEl.addEventListener("dragover", (evt) => {
+        if (dragIndex < 0) return;
+        evt.preventDefault();
+        rowEl.addClass("is-drop-target");
+      });
+      rowEl.addEventListener("dragleave", () => rowEl.removeClass("is-drop-target"));
+      rowEl.addEventListener("drop", (evt) => {
+        evt.preventDefault();
+        const from = dragIndex;
+        dragIndex = -1;
+        if (from < 0 || from === index) return rowEl.removeClass("is-drop-target");
+        const [moved] = rows.splice(from, 1);
+        rows.splice(index, 0, moved);
+        void this.saveProperties().then(() => this.renderProperties(listEl));
+      });
+
+      const typeBtn = rowEl.createEl("button", {
+        cls: "postbox-prop-type clickable-icon",
+        attr: { "aria-label": `Property type: ${row.type}` },
+      });
+      setIcon(typeBtn, typeIcon(row.type));
+      if (required) {
+        typeBtn.disabled = true;
+      } else {
+        typeBtn.addEventListener("click", (evt) => {
+          const menu = new Menu();
+          for (const type of PROPERTY_TYPES) {
+            menu.addItem((item) =>
+              item
+                .setTitle(typeLabel(type))
+                .setIcon(typeIcon(type))
+                .setChecked(row.type === type)
+                .onClick(async () => {
+                  row.type = type;
+                  await this.saveProperties();
+                  this.renderProperties(listEl);
+                }),
+            );
+          }
+          menu.showAtMouseEvent(evt);
+        });
+      }
+
+      const keyInput = rowEl.createEl("input", {
+        cls: "postbox-prop-key",
+        attr: { type: "text", placeholder: "Property name", spellcheck: "false" },
+      });
+      keyInput.value = row.key;
+      keyInput.addEventListener("input", () => {
+        row.key = keyInput.value;
+        void this.saveProperties();
+      });
+
+      const valueInput = rowEl.createEl("input", {
+        cls: "postbox-prop-value",
+        attr: { type: "text", placeholder: "Value, e.g. {{subject}}", spellcheck: "false" },
+      });
+      valueInput.value = row.value;
+      if (required) {
+        valueInput.disabled = true;
+      } else {
+        valueInput.addEventListener("input", () => {
+          row.value = valueInput.value;
+          void this.saveProperties();
+        });
+      }
+
+      const deleteBtn = rowEl.createEl("button", {
+        cls: "postbox-prop-delete clickable-icon",
+        attr: { "aria-label": required ? "Message-ID cannot be removed" : "Remove property" },
+      });
+      setIcon(deleteBtn, "trash-2");
+      if (required) {
+        deleteBtn.disabled = true;
+      } else {
+        deleteBtn.addEventListener("click", async () => {
+          rows.splice(index, 1);
+          await this.saveProperties();
+          this.renderProperties(listEl);
+        });
+      }
+    });
+  }
+}
+
+function typeIcon(type: PropertyType): string {
+  return type === "list" ? "list" : type === "date" ? "calendar" : "align-left";
+}
+
+function typeLabel(type: PropertyType): string {
+  return type === "list" ? "List" : type === "date" ? "Date" : "Text";
 }

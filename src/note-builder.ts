@@ -1,3 +1,4 @@
+import { PropertyContext, renderProperty } from "./properties";
 import type { PostboxSettings } from "./settings";
 import type { EmailAddress, ParsedEmail } from "./types";
 
@@ -12,24 +13,62 @@ export function buildFrontmatter(
   attachmentNames: string[],
 ): string {
   const lines: string[] = ["---"];
-  lines.push(`from: ${yaml(formatAddress(email.from))}`);
-  lines.push(`to: ${yaml(formatAddressList(email.to))}`);
-  lines.push(`cc: ${yaml(formatAddressList(email.cc))}`);
-  lines.push(`subject: ${yaml(email.subject)}`);
-  lines.push(`date: ${yaml(email.date ? toIso(email.date) : "")}`);
-  lines.push(`message-id: ${yaml(email.messageId)}`);
+  const ctx = buildPropertyContext(email, settings, sourceFile, attachmentNames);
+  const seen = new Set<string>();
 
-  lines.push("attachments:");
-  for (const name of attachmentNames) lines.push(`  - ${yaml(name)}`);
+  for (const row of settings.properties) {
+    const key = row.key.trim();
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
 
-  lines.push("tags:");
-  lines.push("  - email");
-  if (settings.extraTag.trim()) lines.push(`  - ${yaml(settings.extraTag.trim())}`);
-
-  lines.push(`source-account: ${yaml(settings.sourceAccount)}`);
-  lines.push(`source-file: ${yaml(sourceFile)}`);
+    const rendered = renderProperty(row, ctx);
+    if (rendered.kind === "list") {
+      lines.push(`${yamlKey(key)}:`);
+      for (const item of rendered.items) lines.push(`  - ${yaml(item)}`);
+    } else {
+      lines.push(`${yamlKey(key)}: ${rendered.bare ? rendered.text : yaml(rendered.text)}`);
+    }
+  }
   lines.push("---", "");
   return lines.join("\n");
+}
+
+/** Split a comma-separated tag setting into clean, unique tags (no leading #). */
+export function parseTags(value: string): string[] {
+  const tags = value
+    .split(",")
+    .map((tag) => tag.trim().replace(/^#+/, "").replace(/\s+/g, "-"))
+    .filter(Boolean);
+  return [...new Set(tags)];
+}
+
+/** Values for every variable usable in property templates. */
+function buildPropertyContext(
+  email: ParsedEmail,
+  settings: PostboxSettings,
+  sourceFile: string,
+  attachmentNames: string[],
+): PropertyContext {
+  const tags = parseTags(settings.tags);
+  const lists: Record<string, string[]> = {
+    to: email.to.map(formatAddress).filter(Boolean),
+    cc: email.cc.map(formatAddress).filter(Boolean),
+    attachments: attachmentNames,
+    tags,
+  };
+  const values: Record<string, string> = {
+    from: formatAddress(email.from),
+    fromName: email.from?.name ?? "",
+    fromAddress: email.from?.address ?? "",
+    subject: email.subject,
+    date: email.date ? toIso(email.date) : "",
+    messageId: email.messageId,
+    sourceAccount: settings.sourceAccount,
+    sourceFile,
+    imported: toIso(new Date()),
+  };
+  for (const [name, items] of Object.entries(lists)) values[name] = items.join(", ");
+  return { values, lists };
 }
 
 /** Render the note filename from the template, then sanitize the result. */
@@ -105,6 +144,11 @@ function slug(value: string): string {
 
 function toIso(date: Date): string {
   return formatDate(date, "YYYY-MM-DDTHH:mm:ss");
+}
+
+/** Emit a YAML key bare when it is simple, otherwise double-quoted. */
+function yamlKey(key: string): string {
+  return /^[A-Za-z0-9_][A-Za-z0-9_-]*$/.test(key) ? key : yaml(key);
 }
 
 function yaml(value: string): string {

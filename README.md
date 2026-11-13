@@ -41,12 +41,21 @@ To try it in Obsidian, copy `main.js`, `manifest.json`, and `styles.css` into yo
 | Attachments folder | `Email/attachments/` |
 | Filename template | `{{date}}_{{from}}_{{subject}}` |
 | Date format | `YYYY-MM-DD` |
-| Extra tag | (empty) |
+| Tags (comma-separated, used by `{{tags}}`) | `email` |
 | Source account | (empty) |
 | Include inline images | on |
 | Watch folder enabled | off |
 | Watch folder path | (empty) |
 | Open note after manual import | on |
+| Frontmatter properties | all on, default names |
+
+### Frontmatter properties
+
+The **Frontmatter properties** section lists every property written to a note. For each row you can edit the key and the value template, pick a type (text, list, or date) from the icon, drag the handle to reorder, and remove the row. **Add property** appends a new row, and **Reset to defaults** restores the built-in list. The defaults produce the same frontmatter as earlier versions.
+
+Value templates can use these variables: `{{from}}`, `{{fromName}}`, `{{fromAddress}}`, `{{to}}`, `{{cc}}`, `{{subject}}`, `{{date}}`, `{{messageId}}`, `{{attachments}}`, `{{tags}}`, `{{sourceAccount}}`, `{{sourceFile}}`, `{{imported}}`. A list row whose value is a single list variable (such as `{{to}}`) becomes a YAML list; otherwise it holds one item. Date rows are written unquoted when the value is an ISO date.
+
+The Message-ID row can be renamed but not removed or edited, because it is used to skip duplicates. Changes apply to newly imported notes only; notes written under a different Message-ID key are not recognized as duplicates.
 
 Filename template variables: `{{date}}`, `{{time}}`, `{{from}}`, `{{subject}}`, `{{messageId}}`.
 
