@@ -12,6 +12,7 @@ import {
   PostboxSettings,
   PostboxSettingTab,
 } from "./settings";
+import { mergeProperties, messageIdKey } from "./properties";
 import { parseEml } from "./parser/eml";
 import { parseMsg } from "./parser/msg";
 import { assembleBody } from "./converter";
@@ -78,6 +79,7 @@ export default class PostboxPlugin extends Plugin {
   async loadSettings(): Promise<void> {
     const data = (await this.loadData()) as Partial<PostboxSettings> | null;
     this.settings = Object.assign({}, DEFAULT_SETTINGS, data ?? {});
+    this.settings.properties = mergeProperties(data?.properties);
   }
 
   async saveSettings(): Promise<void> {
@@ -143,7 +145,11 @@ export default class PostboxPlugin extends Plugin {
       const email: ParsedEmail =
         extension === "msg" ? await parseMsg(bytes) : await parseEml(bytes);
 
-      const existing = findExistingByMessageId(this.app, email.messageId);
+      const existing = findExistingByMessageId(
+        this.app,
+        email.messageId,
+        messageIdKey(this.settings.properties),
+      );
       if (existing) return { status: "duplicate", file: existing };
 
       const prefix = buildAttachmentPrefix(email);
