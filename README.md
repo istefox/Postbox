@@ -41,7 +41,7 @@ To try it in Obsidian, copy `main.js`, `manifest.json`, and `styles.css` into yo
 | Attachments folder | `Email/attachments/` |
 | Filename template | `{{date}}_{{from}}_{{subject}}` |
 | Date format | `YYYY-MM-DD` |
-| Extra tag | (empty) |
+| Tags (comma-separated, used by `{{tags}}`) | `email` |
 | Source account | (empty) |
 | Include inline images | on |
 | Watch folder enabled | off |

@@ -16,7 +16,8 @@ export interface PostboxSettings {
   attachmentsFolder: string;
   filenameTemplate: string;
   dateFormat: string;
-  extraTag: string;
+  /** Comma-separated tags available as the {{tags}} variable. */
+  tags: string;
   sourceAccount: string;
   includeInlineImages: boolean;
   watchFolderEnabled: boolean;
@@ -30,7 +31,7 @@ export const DEFAULT_SETTINGS: PostboxSettings = {
   attachmentsFolder: "Email/attachments/",
   filenameTemplate: "{{date}}_{{from}}_{{subject}}",
   dateFormat: "YYYY-MM-DD",
-  extraTag: "",
+  tags: "email",
   sourceAccount: "",
   includeInlineImages: true,
   watchFolderEnabled: false,
@@ -105,13 +106,14 @@ export class PostboxSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName("Extra tag")
-      .setDesc("Additional tag added to every note alongside the fixed 'email' tag. Leave empty to disable.")
+      .setName("Tags")
+      .setDesc("Comma-separated tags added to every note through the {{tags}} property variable. Leave empty to add no tags.")
       .addText((text) =>
         text
-          .setValue(this.plugin.settings.extraTag)
+          .setPlaceholder("email, inbox")
+          .setValue(this.plugin.settings.tags)
           .onChange(async (value) => {
-            this.plugin.settings.extraTag = value;
+            this.plugin.settings.tags = value;
             await this.plugin.saveSettings();
           }),
       );

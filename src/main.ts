@@ -80,6 +80,12 @@ export default class PostboxPlugin extends Plugin {
     const data = (await this.loadData()) as Partial<PostboxSettings> | null;
     this.settings = Object.assign({}, DEFAULT_SETTINGS, data ?? {});
     this.settings.properties = mergeProperties(data?.properties);
+    // Older versions stored a single extra tag next to a fixed "email" tag.
+    const legacy = (data as { extraTag?: unknown } | null)?.extraTag;
+    if (data && data.tags === undefined && typeof legacy === "string") {
+      this.settings.tags = legacy.trim() ? `email, ${legacy.trim()}` : "email";
+    }
+    delete (this.settings as { extraTag?: unknown }).extraTag;
   }
 
   async saveSettings(): Promise<void> {

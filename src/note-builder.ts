@@ -33,6 +33,15 @@ export function buildFrontmatter(
   return lines.join("\n");
 }
 
+/** Split a comma-separated tag setting into clean, unique tags (no leading #). */
+export function parseTags(value: string): string[] {
+  const tags = value
+    .split(",")
+    .map((tag) => tag.trim().replace(/^#+/, "").replace(/\s+/g, "-"))
+    .filter(Boolean);
+  return [...new Set(tags)];
+}
+
 /** Values for every variable usable in property templates. */
 function buildPropertyContext(
   email: ParsedEmail,
@@ -40,8 +49,7 @@ function buildPropertyContext(
   sourceFile: string,
   attachmentNames: string[],
 ): PropertyContext {
-  const tags = ["email"];
-  if (settings.extraTag.trim()) tags.push(settings.extraTag.trim());
+  const tags = parseTags(settings.tags);
   const lists: Record<string, string[]> = {
     to: email.to.map(formatAddress).filter(Boolean),
     cc: email.cc.map(formatAddress).filter(Boolean),

@@ -32,7 +32,7 @@ export const PROPERTY_VARIABLES: { name: string; description: string }[] = [
   { name: "date", description: "Message date (ISO 8601)" },
   { name: "messageId", description: "Message-ID" },
   { name: "attachments", description: "Attachment filenames" },
-  { name: "tags", description: "Tag 'email' plus the extra tag setting" },
+  { name: "tags", description: "Tags from the Tags setting" },
   { name: "sourceAccount", description: "Source account setting" },
   { name: "sourceFile", description: "Path of the imported file" },
   { name: "imported", description: "Import time (ISO 8601)" },
